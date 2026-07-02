@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <rect width="200" height="200" rx="40" fill="#12103A"/>
+  <circle cx="100" cy="100" r="70" fill="none" stroke="#C9922A" stroke-width="4" opacity="0.4"/>
+  <text x="100" y="122" font-size="70" text-anchor="middle" fill="#C9922A">🙏</text>
+</svg>

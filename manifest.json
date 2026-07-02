@@ -1,0 +1,17 @@
+{
+  "name": "Nam Japp Counter",
+  "short_name": "Nam Japp",
+  "description": "A simple devotional counter for Nam Japp meditation",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#12103A",
+  "theme_color": "#12103A",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
