@@ -1,5 +1,5 @@
 const CACHE_NAME = "nam-japp-v1";
-const URLS_TO_CACHE = ["/", "/index.html", "/manifest.json", "/icon.svg"];
+const URLS_TO_CACHE = ["/", "/index.html", "/manifest.json", "/icon.svg", "/waheguru.mp3"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
