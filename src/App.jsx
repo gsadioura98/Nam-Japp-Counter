@@ -32,10 +32,18 @@ export default function App() {
   const [pulse, setPulse] = useState(false);
   const [milestone, setMilestone] = useState(null);
   const [soundOn, setSoundOn] = useState(true);
+  const [voiceOn, setVoiceOn] = useState(true);
   const [loaded, setLoaded] = useState(false);
   const rippleId = useRef(0);
   const milestoneTimer = useRef(null);
   const audioCtx = useRef(null);
+  const voiceAudio = useRef(null);
+
+  // Preload the voice clip once
+  useEffect(() => {
+    voiceAudio.current = new Audio("/waheguru.mp3");
+    voiceAudio.current.preload = "auto";
+  }, []);
 
   // Load saved progress on mount
   useEffect(() => {
@@ -46,6 +54,7 @@ export default function App() {
         setCount(data.count || 0);
         setMalas(data.malas || 0);
         setSoundOn(data.soundOn !== undefined ? data.soundOn : true);
+        setVoiceOn(data.voiceOn !== undefined ? data.voiceOn : true);
       }
     } catch (e) {
       // no saved data yet, start fresh
@@ -59,12 +68,12 @@ export default function App() {
     try {
       localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify({ count, malas, soundOn })
+        JSON.stringify({ count, malas, soundOn, voiceOn })
       );
     } catch (e) {
       // storage unavailable, fail silently
     }
-  }, [count, malas, soundOn, loaded]);
+  }, [count, malas, soundOn, voiceOn, loaded]);
 
   function playBell() {
     if (!soundOn) return;
@@ -89,6 +98,16 @@ export default function App() {
     }
   }
 
+  function playVoice() {
+    if (!voiceOn || !voiceAudio.current) return;
+    try {
+      voiceAudio.current.currentTime = 0;
+      voiceAudio.current.play().catch(() => {});
+    } catch (e) {
+      // playback failed, fail silently
+    }
+  }
+
   const handleJapp = useCallback(() => {
     setCount((prev) => {
       const next = prev + 1;
@@ -109,13 +128,14 @@ export default function App() {
     setPulse(true);
     setTimeout(() => setPulse(false), 200);
     playBell();
+    playVoice();
 
     const id = ++rippleId.current;
     setRipples((r) => [...r, { id }]);
     setTimeout(() => {
       setRipples((r) => r.filter((x) => x.id !== id));
     }, 900);
-  }, [soundOn]);
+  }, [soundOn, voiceOn]);
 
   function triggerMilestone(msg) {
     setMilestone(msg);
@@ -335,18 +355,18 @@ export default function App() {
       </div>
 
       {/* Controls */}
-      <div style={{ display: "flex", gap: "12px" }}>
+      <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", justifyContent: "center" }}>
         <button
           onClick={() => setSoundOn((s) => !s)}
           style={{
             background: "transparent",
             border: "1px solid rgba(240,234,214,0.2)",
             color: "rgba(240,234,214,0.4)",
-            padding: "8px 20px",
+            padding: "8px 18px",
             borderRadius: "20px",
             cursor: "pointer",
             fontSize: "12px",
-            letterSpacing: "2px",
+            letterSpacing: "1.5px",
             fontFamily: "sans-serif",
             textTransform: "uppercase",
             transition: "all 0.2s ease",
@@ -360,7 +380,34 @@ export default function App() {
             e.target.style.color = "rgba(240,234,214,0.4)";
           }}
         >
-          {soundOn ? "🔔 Sound On" : "🔕 Sound Off"}
+          {soundOn ? "🔔 Bell On" : "🔕 Bell Off"}
+        </button>
+
+        <button
+          onClick={() => setVoiceOn((v) => !v)}
+          style={{
+            background: "transparent",
+            border: "1px solid rgba(240,234,214,0.2)",
+            color: "rgba(240,234,214,0.4)",
+            padding: "8px 18px",
+            borderRadius: "20px",
+            cursor: "pointer",
+            fontSize: "12px",
+            letterSpacing: "1.5px",
+            fontFamily: "sans-serif",
+            textTransform: "uppercase",
+            transition: "all 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.borderColor = "rgba(201,146,42,0.5)";
+            e.target.style.color = "#C9922A";
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.borderColor = "rgba(240,234,214,0.2)";
+            e.target.style.color = "rgba(240,234,214,0.4)";
+          }}
+        >
+          {voiceOn ? "🗣️ Voice On" : "🔇 Voice Off"}
         </button>
 
         <button
@@ -369,11 +416,11 @@ export default function App() {
             background: "transparent",
             border: "1px solid rgba(240,234,214,0.2)",
             color: "rgba(240,234,214,0.4)",
-            padding: "8px 24px",
+            padding: "8px 22px",
             borderRadius: "20px",
             cursor: "pointer",
             fontSize: "12px",
-            letterSpacing: "2px",
+            letterSpacing: "1.5px",
             fontFamily: "sans-serif",
             textTransform: "uppercase",
             transition: "all 0.2s ease",
